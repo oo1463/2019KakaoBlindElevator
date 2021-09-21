@@ -1,0 +1,7 @@
+/API/X_auth_token.py
+/venv/*
+/venv
+
+.idea
+__pycache__/*
+__pycache__
