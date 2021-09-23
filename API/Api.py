@@ -29,7 +29,6 @@ class Api:
         url = base_url + '/' + 'action'
         headers = {'Content-Type': 'application/json; charset=utf-8', 'X-Auth-Token': auth_token}
 
-        # res_action = requests.post(url, headers=headers, json={"commands": commands}).json()
         try:
             res_action = requests.post(url, headers=headers, json={"commands": commands}).json()
         except:
