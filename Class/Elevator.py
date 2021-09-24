@@ -25,6 +25,9 @@ class Elevator:
         else:
             self.__highest_floor = 25
 
+    def __str__(self):
+        return f'[ {self.__id} ] // floor: {self.__floor} , passengers: {self.__passengers} , status: {self.__status}'
+
     def set_items(self, floor, passengers, status):
         self.__floor = floor
         self.__passengers = passengers
@@ -34,7 +37,6 @@ class Elevator:
         return self.__floor
 
     def make_command(self, what_command, calls=None):
-        # print(self.__id)
         command = {'elevator_id': self.__id, 'command': what_command}
         if what_command == ENTER or what_command == EXIT:
             command['call_ids'] = [call['id'] for call in calls]
@@ -86,7 +88,7 @@ class Elevator:
         past_status = self.__status
 
         out_calls = self.find_out_calls()
-        if len(out_calls) == 0:
+        if not out_calls:
             return
 
         if self.__status == UPWARD or self.__status == DOWNWARD:

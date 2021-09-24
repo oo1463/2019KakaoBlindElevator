@@ -62,11 +62,25 @@ class Problem:
 
     def find_calls_in_floor(self, elevator):
         calls_in_floor = []
-        # print("FFFFF " + str(self.__calls))
         for call in self.__calls:
             if call['start'] == elevator.get_floor() and not self.__used_call_num[call['id']]:
                 calls_in_floor.append(call)
         return calls_in_floor
+
+    def move_elevator_with_state(self, elevator):
+        # upward or downward
+        if elevator.get_elevator_status() == UPWARD and elevator.is_at_max_floor():
+            elevator.elevator_stop()
+        elif elevator.get_elevator_status() == DOWNWARD and elevator.is_at_first_floor():
+            elevator.elevator_stop()
+        elif elevator.get_elevator_status() == STOPPED and elevator.is_at_first_floor():
+            elevator.elevator_up()
+        elif elevator.get_elevator_status() == STOPPED and elevator.is_at_max_floor():
+            elevator.elevator_down()
+        elif elevator.get_elevator_status() == UPWARD:
+            elevator.elevator_up()
+        elif elevator.get_elevator_status() == DOWNWARD:
+            elevator.elevator_down()
 
     def simulate(self):
 
@@ -75,7 +89,7 @@ class Problem:
 
             for elevator in self.__elevators:
 
-                if len(elevator.get_commands()) == 0:
+                if not elevator.get_commands():
                     # out call 확인
                     elevator.get_out_calls()
 
@@ -88,27 +102,13 @@ class Problem:
                         for call in calls_in_floor[:count_acceptable_call]:  # 엘리베이터에 태운 call 목록 삭제
                             self.__used_call_num[call['id']] = True
 
-                    # upward or downward
-                    if elevator.get_elevator_status() == UPWARD and elevator.is_at_max_floor():
-                        elevator.elevator_stop()
-                    elif elevator.get_elevator_status() == DOWNWARD and elevator.is_at_first_floor():
-                        elevator.elevator_stop()
-                    elif elevator.get_elevator_status() == STOPPED and elevator.is_at_first_floor():
-                        elevator.elevator_up()
-                    elif elevator.get_elevator_status() == STOPPED and elevator.is_at_max_floor():
-                        elevator.elevator_down()
-                    elif elevator.get_elevator_status() == UPWARD:
-                        elevator.elevator_up()
-                    elif elevator.get_elevator_status() == DOWNWARD:
-                        elevator.elevator_down()
+                    self.move_elevator_with_state(elevator)
 
-                # print(elevator.get_commands())
-                if elevator.get_first_command()['command'] == 'ENTER' and len(elevator.get_first_command()['call_ids']) == 0:
+                if elevator.get_first_command()['command'] == 'ENTER' and not elevator.get_first_command()['call_ids']:
                     elevator.del_first_command()
                 self.__commands.append(elevator.get_first_command())
                 elevator.del_first_command()
 
             print(self.__commands)
-            # print()
             self.action()
             self.__commands.clear()
