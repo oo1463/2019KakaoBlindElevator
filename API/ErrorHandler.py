@@ -10,4 +10,3 @@ class ErrorHandler:
     @staticmethod
     def error_json(e):
         print(f'json error\n {e}')
-
