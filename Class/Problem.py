@@ -67,7 +67,7 @@ class Problem:
                 calls_in_floor.append(call)
         return calls_in_floor
 
-    def get_in_call(self, elevator):
+    def get_in_calls(self, elevator):
         calls_in_floor = self.find_calls_in_floor(elevator)
         if len(calls_in_floor) > 0:
             count_acceptable_call = elevator.get_max_passenger_count() - elevator.get_now_passenger_count()
@@ -102,6 +102,7 @@ class Problem:
         while self.__is_end is False:
             self.get_on_call()
 
+            # Elevator Parallel Control
             for elevator in self.__elevators:
 
                 # make commands for moving elevator or getting in calls
@@ -109,7 +110,7 @@ class Problem:
                     # out_calls process
                     elevator.get_out_calls()
                     # in_calls process
-                    self.get_in_call(elevator)
+                    self.get_in_calls(elevator)
                     # elevator move
                     self.move_elevator_with_state(elevator)
 
