@@ -106,9 +106,9 @@ class Problem:
 
                 # make commands for moving elevator or getting in calls
                 if not elevator.get_commands():
-                    # elevator out
+                    # out_calls process
                     elevator.get_out_calls()
-                    # elevator in
+                    # in_calls process
                     self.get_in_call(elevator)
                     # elevator move
                     self.move_elevator_with_state(elevator)
