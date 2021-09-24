@@ -67,6 +67,15 @@ class Problem:
                 calls_in_floor.append(call)
         return calls_in_floor
 
+    def get_in_call(self, elevator):
+        calls_in_floor = self.find_calls_in_floor(elevator)
+        if len(calls_in_floor) > 0:
+            count_acceptable_call = elevator.get_max_passenger_count() - elevator.get_now_passenger_count()
+
+            elevator.get_in_calls(calls_in_floor[:count_acceptable_call])
+            for call in calls_in_floor[:count_acceptable_call]:  # 엘리베이터에 태운 call 목록 삭제
+                self.__used_call_num[call['id']] = True
+
     def move_elevator_with_state(self, elevator):
         # upward or downward
         if elevator.get_elevator_status() == UPWARD and elevator.is_at_max_floor():
@@ -82,6 +91,12 @@ class Problem:
         elif elevator.get_elevator_status() == DOWNWARD:
             elevator.elevator_down()
 
+    def make_commands(self, elevator):
+        if elevator.get_first_command()['command'] == 'ENTER' and not elevator.get_first_command()['call_ids']:
+            elevator.del_first_command()
+        self.__commands.append(elevator.get_first_command())
+        elevator.del_first_command()
+
     def simulate(self):
 
         while self.__is_end is False:
@@ -89,25 +104,16 @@ class Problem:
 
             for elevator in self.__elevators:
 
+                # make commands for moving elevator or getting in calls
                 if not elevator.get_commands():
-                    # out call 확인
+                    # elevator out
                     elevator.get_out_calls()
-
-                    # in call 확인
-                    calls_in_floor = self.find_calls_in_floor(elevator)
-                    if len(calls_in_floor) > 0:
-                        count_acceptable_call = elevator.get_max_passenger_count() - elevator.get_now_passenger_count()
-
-                        elevator.get_in_calls(calls_in_floor[:count_acceptable_call])
-                        for call in calls_in_floor[:count_acceptable_call]:  # 엘리베이터에 태운 call 목록 삭제
-                            self.__used_call_num[call['id']] = True
-
+                    # elevator in
+                    self.get_in_call(elevator)
+                    # elevator move
                     self.move_elevator_with_state(elevator)
 
-                if elevator.get_first_command()['command'] == 'ENTER' and not elevator.get_first_command()['call_ids']:
-                    elevator.del_first_command()
-                self.__commands.append(elevator.get_first_command())
-                elevator.del_first_command()
+                self.make_commands(elevator)
 
             print(self.__commands)
             self.action()
